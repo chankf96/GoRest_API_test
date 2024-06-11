@@ -1,0 +1,375 @@
+{
+	"info": {
+		"_postman_id": "836d753d-a76f-4860-9622-e2807c61dee5",
+		"name": "GOREST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24226624",
+		"_collection_link": "https://blue-comet-612325.postman.co/workspace/Team-Workspace~ca0aa8da-34d0-4d2f-8724-7b2209fcabc6/collection/24226624-836d753d-a76f-4860-9622-e2807c61dee5?action=share&source=collection_link&creator=24226624"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//comment following scripts for data input collection run\r",
+							"//generate Name\r",
+							"pm.environment.set(\"randomName\", Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 5));\r",
+							"//generate Email based on Name\r",
+							"pm.environment.set(\"randomEmail\", pm.environment.get(\"randomName\") + \"@example.com\");\r",
+							"\r",
+							"//Random input gender and status\r",
+							"const genders = [\"male\", \"female\",\"\"];\r",
+							"const status = [\"active\",\"inactive\",\"\"]\r",
+							"let randomIndex = Math.floor(Math.random() * genders.length);\r",
+							"const inputGender = genders[randomIndex];\r",
+							"randomIndex = Math.floor(Math.random() * status.length);\r",
+							"const inputStatus = status[randomIndex]\r",
+							"pm.environment.set(\"inputGender\", inputGender);\r",
+							"pm.environment.set(\"inputStatus\", inputStatus);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify Response either 201 Created or 422 Unprocessable Entity\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201,422]);",
+							"});",
+							"",
+							"if (pm.response.code === 201){",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.test(\"201 - Response has the required fields - id, name, email, gender, and status\", function () {",
+							"        pm.expect(responseData).to.be.an('object');",
+							"        pm.expect(responseData).to.have.property('id');",
+							"        pm.expect(responseData).to.have.property('name');",
+							"        pm.expect(responseData).to.have.property('email');",
+							"        pm.expect(responseData).to.have.property('gender');",
+							"        pm.expect(responseData).to.have.property('status');",
+							"    });",
+							"",
+							"    pm.test(\"201 - Id is expected to be an integer\", function () {",
+							"        pm.expect(Number.isInteger(responseData.id)).to.be.true;    ",
+							"    })",
+							"",
+							"    pm.test(\"201 - Email is in a valid format\", function () {    ",
+							"        pm.expect(responseData.email).to.match(/^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$/);",
+							"    });",
+							"",
+							"    pm.test(\"201 - Gender is expected to be either 'male' or 'female'\", function () {",
+							"        pm.expect(responseData.gender).to.exist.and.to.be.oneOf(['male', 'female']);",
+							"    });",
+							"",
+							"    pm.test(\"201 - Status is expected to be either 'active' or 'inactive'\", function () {",
+							"        pm.expect(responseData.status).to.exist.and.to.be.oneOf(['active', 'inactive']);",
+							"    });",
+							"}",
+							"else if (pm.response.code === 422){",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.test(\"422 - Response is an array\", function () {",
+							"        pm.expect(Array.isArray(responseData)).to.be.true;",
+							"        pm.expect(responseData.length).to.be.greaterThan(0);",
+							"    });",
+							"",
+							"    pm.test(\"422 - Field value in each item as expected\", function () {",
+							"        responseData.forEach(item => {",
+							"            // Check if \"field\" property exists",
+							"            pm.expect(item).to.have.property('field');",
+							"",
+							"            // Verify \"field\" value is one of the expected values",
+							"            pm.expect(item.field).to.be.oneOf(['gender', 'status', 'email', 'name']);",
+							"        });",
+							"    });",
+							"",
+							"    const formData = pm.request.body.formdata; // Access request body form-data object",
+							"    const inputName = formData.get(\"name\");",
+							"    const inputGender = formData.get(\"gender\");",
+							"    const inputEmail = formData.get(\"email\");",
+							"    const inputStatus = formData.get(\"status\");  ",
+							"    const emailRegex = /^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$/;",
+							"    const nameItem = responseData.find(item => item.field === 'name');",
+							"    const emailItem = responseData.find(item => item.field === 'email');",
+							"    const genderItem = responseData.find(item => item.field === 'gender');",
+							"    const statusItem = responseData.find(item => item.field === 'status');",
+							"",
+							"    if(inputName === null || inputName === undefined || inputName === \"\"){",
+							"        pm.test(\"Response message for undefined/null/empty name as expected\", function () {",
+							"            pm.expect(nameItem).to.not.be.undefined;",
+							"",
+							"            if (nameItem) {",
+							"                pm.expect(nameItem.message).eq(\"can't be blank\");",
+							"            }",
+							"        });",
+							"    }",
+							"",
+							"    if (inputEmail === null || inputEmail === undefined || inputEmail === \"\") {",
+							"        pm.test(\"Response message for undefined/null/empty email as expected\", function () {",
+							"            pm.expect(emailItem).to.not.be.undefined;",
+							"",
+							"            if (emailItem) {",
+							"                pm.expect(emailItem.message).eq(\"can't be blank\");",
+							"            }",
+							"        });",
+							"    } else if (!emailRegex.test(inputEmail)) {",
+							"        pm.test(\"Response message for invalid email as expected\", function () {",
+							"            pm.expect(emailItem).to.not.be.undefined;",
+							"",
+							"            if (emailItem) {",
+							"                pm.expect(emailItem.message).eq(\"is invalid\");",
+							"            }",
+							"        });",
+							"    } else if (emailItem){",
+							"        pm.test(\"Response message for email been taken as expected\", function () {",
+							"            pm.expect(emailItem.message).eq(\"has already been taken\");",
+							"        });",
+							"    }",
+							"",
+							"    if (inputGender !== 'male' && inputGender !== 'female') {",
+							"        pm.test(\"Response message for undefined/null/empty/invalid gender as expected\", function () {",
+							"            pm.expect(genderItem).to.not.be.undefined;",
+							"",
+							"            if (genderItem) {",
+							"                pm.expect(genderItem.message).eq(\"can't be blank, can be male of female\");",
+							"            }",
+							"        });",
+							"    }",
+							"",
+							"    if (inputStatus !== 'active' && inputStatus !== 'inactive') {",
+							"        pm.test(\"Response message for undefined/null/empty/invalid status as expected\", function () {",
+							"            pm.expect(statusItem).to.not.be.undefined;",
+							"",
+							"            if (statusItem) {",
+							"                pm.expect(statusItem.message).eq(\"can't be blank\");",
+							"            }",
+							"        });",
+							"    }",
+							"};"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "b7a6e1ba6409f16f12c412fcc181f26cff6114c848f4989045e4f1b3604644d9",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "{{randomName}}",
+							"type": "text"
+						},
+						{
+							"key": "gender",
+							"value": "{{inputGender}}",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "{{randomEmail}}",
+							"type": "text"
+						},
+						{
+							"key": "status",
+							"value": "{{inputStatus}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://gorest.co.in/public/v2/users",
+					"protocol": "https",
+					"host": [
+						"gorest",
+						"co",
+						"in"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create User",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Firefly",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "female",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "firefly@hrs.com",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "active",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://gorest.co.in/public/v2/users",
+							"protocol": "https",
+							"host": [
+								"gorest",
+								"co",
+								"in"
+							],
+							"path": [
+								"public",
+								"v2",
+								"users"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Mon, 10 Jun 2024 13:21:09 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "93"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "max-age=0, private, must-revalidate"
+						},
+						{
+							"key": "etag",
+							"value": "W/\"0e7a4a9643116953b1f16ae16db45c1a\""
+						},
+						{
+							"key": "location",
+							"value": "https://gorest.co.in/public/v2/users/6957181"
+						},
+						{
+							"key": "referrer-policy",
+							"value": "strict-origin-when-cross-origin"
+						},
+						{
+							"key": "vary",
+							"value": "Origin"
+						},
+						{
+							"key": "x-content-type-options",
+							"value": "nosniff"
+						},
+						{
+							"key": "x-download-options",
+							"value": "noopen"
+						},
+						{
+							"key": "x-frame-options",
+							"value": "SAMEORIGIN"
+						},
+						{
+							"key": "x-permitted-cross-domain-policies",
+							"value": "none"
+						},
+						{
+							"key": "x-ratelimit-limit",
+							"value": "90"
+						},
+						{
+							"key": "x-ratelimit-remaining",
+							"value": "89"
+						},
+						{
+							"key": "x-ratelimit-reset",
+							"value": "1"
+						},
+						{
+							"key": "x-request-id",
+							"value": "9f0d44da-9bb4-4601-9d4b-c23b85134374"
+						},
+						{
+							"key": "x-runtime",
+							"value": "0.122215"
+						},
+						{
+							"key": "x-xss-protection",
+							"value": "0"
+						},
+						{
+							"key": "CF-Cache-Status",
+							"value": "DYNAMIC"
+						},
+						{
+							"key": "Report-To",
+							"value": "{\"endpoints\":[{\"url\":\"https:\\/\\/a.nel.cloudflare.com\\/report\\/v4?s=sZZ%2FpxoxpZCQiDTWQ%2B%2B%2F4dYfaVOGcdXcYF98EMOew1Xc5GZbr474YFR3V9QzIUS%2F1W6eApZzIJ9NlXTQzWdPcDX%2FoAbaMbrmUVF%2FLXkH5zGg0hZ4p70gSmNfjF2sckA%3D\"}],\"group\":\"cf-nel\",\"max_age\":604800}"
+						},
+						{
+							"key": "NEL",
+							"value": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}"
+						},
+						{
+							"key": "Server",
+							"value": "cloudflare"
+						},
+						{
+							"key": "CF-RAY",
+							"value": "8919a9af2bb581a2-SIN"
+						},
+						{
+							"key": "alt-svc",
+							"value": "h3=\":443\"; ma=86400"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 6957181,\n    \"name\": \"Firefly\",\n    \"email\": \"firefly@hrs.com\",\n    \"gender\": \"female\",\n    \"status\": \"active\"\n}"
+				}
+			]
+		}
+	]
+}
