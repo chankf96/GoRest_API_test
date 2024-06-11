@@ -18,11 +18,11 @@ Replace the `<environment_file_path>` with the environment file path
 **For VSCode** => select the file then press `shift + alt + C` to copy the file path
 
 ## Description for each collections:
-1. [`GOREST.postman_collection`](GOREST.postman_collection.json)
+1. [`GOREST.postman_collection`](Postman_collections/GOREST.postman_collection.json)
    
    This collection that have pre-request script that able to generate random inputs, every run with different random inputs.
 
-2. [`GOREST_REQUIRED_ITERATION_DATA.postman_collection`](GOREST_REQUIRED_ITERATION_DATA.postman_collection.json)
+2. [`GOREST_REQUIRED_ITERATION_DATA.postman_collection`](Postman_collections/GOREST_REQUIRED_ITERATION_DATA.postman_collection.json)
     
    This collection will need to run with iteration data that also will able to find in the IterationTestData folder. 
 
@@ -32,11 +32,11 @@ Replace the `<environment_file_path>` with the environment file path
 
     Replace the `<iteration_data_file_path>` with the `.csv` data file path
 
-3. [`GORESTV2.postman_collection`](GORESTV2.postman_collection.json)
+3. [`GORESTV2.postman_collection`](Postman_collections/GORESTV2.postman_collection.json)
    
    This collection used to demostrate simple postman collection automate test cases assertion. (have pre-request script that able to generate random inputs)
 
-4. [`GORESTV2_REQUIRED_ITERATION_DATA.postman_collection`](GORESTV2_REQUIRED_ITERATION_DATA.postman_collection.json)
+4. [`GORESTV2_REQUIRED_ITERATION_DATA.postman_collection`](Postman_collections/GORESTV2_REQUIRED_ITERATION_DATA.postman_collection.json)
    
    This collection is the required iteration data input version of `GORESTV2.postman_collection`
 
