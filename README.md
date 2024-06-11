@@ -1,6 +1,6 @@
 # GoRest_API_test
 
-## Pre-requisite:
+## Prerequisite:
 1. You may clone the whole repository to local
 2. Install newman with command prompt terminal (will require to install node.js)
 
