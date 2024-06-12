@@ -7,11 +7,13 @@
        npm install -g newman
 
 ## To run the postman collection:
-    newman run <collection_file_path> -e <environment_file_path> 
+    newman run <collection_file_path> -e <environment_file_path> -n <number of iteration>
 
 Replace the `<collection_file_path>` with the collection file path
 
 Replace the `<environment_file_path>` with the environment file path
+
+Replace the `<number of iteration>` with the desired iteration count
 
 **For Windows** => select the file, then press `ctrl + alt + C` to copy the file path
   
